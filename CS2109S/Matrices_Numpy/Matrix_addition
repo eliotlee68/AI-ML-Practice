@@ -1,0 +1,21 @@
+def add_matrices(A, B):
+    """
+    Returns a new matrix that is the result of adding matrix B to matrix A.
+    """
+    if len(A) != len(B) or len(A[0]) != len(B[0]):
+        raise Exception('A and B cannot be added as they have incompatible dimensions!')
+    
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    m = len(A)
+    if (m == 0):
+        n = 0
+    else:
+        n = len(A[0])
+    #Add A and B to new matrice C with nested for loop
+    C = []
+    for i in range(m):
+        temp_arr = []
+        for j in range(n):
+            temp_arr.append(A[i][j] + B[i][j])
+        C.append(temp_arr)
+    return C
