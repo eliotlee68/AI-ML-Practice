@@ -1,0 +1,77 @@
+def cost_function(X: np.ndarray, y: np.ndarray, weight_vector: np.ndarray):
+    '''
+    Cross entropy error for logistic regression
+    Parameters
+    ----------
+    X: np.ndarray
+        (m, n) training dataset (features).
+    y: np.ndarray
+        (m,) training dataset (corresponding targets).
+    weight_vector: np.ndarray
+        (n,) weight parameters.
+    Returns
+    -------
+    Cost
+    '''
+    
+    # Machine epsilon for numpy `float64` type
+    eps = np.finfo(np.float64).eps
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    m = X.shape[0]
+    n = X.shape[1]
+    weighted_x = np.matmul(X, weight_vector.reshape((n, 1)))
+    yMat = y.reshape((m, 1))
+    pred_y = (1 / (1 + np.exp(-weighted_x)))
+    error = -(yMat * np.log(pred_y + eps)) - ((1-yMat) * np.log(1 - pred_y + eps))
+    return (np.mean(error))
+
+def weight_update(X: np.ndarray, y: np.ndarray, alpha: np.float64, weight_vector: np.ndarray) -> np.ndarray:
+    '''
+    Do the weight update for one step in gradient descent
+    Parameters
+    ----------
+    X: np.ndarray
+        (m, n) training dataset (features).
+    y: np.ndarray
+        (m,) training dataset (corresponding targets).
+    alpha: np.float64
+        logistic regression learning rate.
+    weight_vector: np.ndarray
+        (n,) weight parameters.
+    Returns
+    -------
+    New weight vector after one round of update.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    m = X.shape[0]
+    n = X.shape[1]
+    weighted_x = np.matmul(X, weight_vector.reshape((n, 1)))
+    yMat = y.reshape((m, 1))
+    pred_y = (1 / (1 + np.exp(-weighted_x)))
+    weightsDerive = (1/m) * np.matmul(np.transpose(X), (pred_y - yMat))
+    new_weights = weight_vector - ((weightsDerive * alpha).reshape((n,)))
+    return new_weights
+
+def logistic_regression_classification(X: np.ndarray, weight_vector: np.ndarray, prob_threshold: np.float64=0.5):
+    '''
+    Do classification task using logistic regression.
+    Parameters
+    ----------
+    X: np.ndarray
+        (m, n) training dataset (features).
+    weight_vector: np.ndarray
+        (n,) weight parameters.
+    prob_threshold: np.float64
+        the threshold for a prediction to be considered fraudulent.
+    Returns
+    -------
+    Classification result as an (m,) np.ndarray
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    m = X.shape[0]
+    n = X.shape[1]
+    weighted_x = np.matmul(X, weight_vector.reshape((n, 1)))
+    pred_y = (1 / (1 + np.exp(-weighted_x)))
+    prediction = (pred_y > prob_threshold).astype(int).reshape((m,))
+    return prediction
+
