@@ -1,0 +1,49 @@
+def negamax_alpha_beta(board, depth, max_depth, alpha, beta) -> Tuple[Score, Move]:
+    # TODO: Replace this with your own implementation
+    '''
+    Finds the best move for the input board state.
+    Note that you are black.
+    Parameters
+    ----------
+    board: 2D list of lists. Contains characters 'B', 'W' and '_' 
+    representing black pawn, white pawn and empty cell, respectively.
+    
+    depth: int, the depth to search for the best move. When this is equal
+    to `max_depth`, you should get the evaluation of the position using 
+    the provided heuristic function.
+    max_depth: int, the maximum depth for cutoff.
+    Notice that you no longer need the parameter `is_black`.
+    Returns
+    -------
+    A tuple (evalutation, ((src_row, src_col), (dst_row, dst_col))):
+    evaluation: the best score that black can achieve after this move.
+    src_row, src_col: position of the pawn to move.
+    dst_row, dst_col: position to move the pawn to.
+    '''
+    # TODO: replace with your own implementation
+    
+    def is_cutoff(state, depth):
+        if ((depth >= max_depth) or (evaluate(state) == utils.WIN) or (evaluate(state) == -utils.WIN)):
+            return True
+        return False
+    
+    def negamax_val(state, depth, alpha, beta):
+        best_move = None
+        if (is_cutoff(state, depth)):
+            return (evaluate(state), None)
+        v = float('-inf')
+        moves = generate_valid_moves(state)
+        for move in moves:
+            next_state = utils.state_change(state, move[0], move[1], False)
+            utils.invert_board(next_state)
+            score = -negamax_val(next_state, depth + 1, -beta, -alpha)[0]
+            if (score > v):
+                v = score
+                bestmove = move
+            if (v > alpha):
+                alpha = v
+            if (alpha >= beta):
+                return (v, best_move)
+        return (v, bestmove)
+    
+    return negamax_val(board, depth, float('-inf'), float('inf'))
