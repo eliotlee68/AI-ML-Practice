@@ -1,0 +1,59 @@
+def minimax(board, depth, max_depth, is_black: bool) -> Tuple[Score, Move]:
+    '''
+    Finds the best move for the input board state.
+    Note that you are black.
+    Parameters
+    ----------
+    board: 2D list of lists. Contains characters 'B', 'W' and '_'
+    representing black pawn, white pawn and empty cell, respectively.
+    depth: int, the depth to search for the best move. When this is equal
+    to `max_depth`, you should get the evaluation of the position using
+    the provided heuristic function.
+    max_depth: int, the maximum depth for cutoff.
+    is_black: bool. True when finding the best move for black, False
+    otherwise.
+    Returns
+    -------
+    A tuple (evalutation, ((src_row, src_col), (dst_row, dst_col))):
+    evaluation: the best score that black can achieve after this move.
+    src_row, src_col: position of the pawn to move.
+    dst_row, dst_col: position to move the pawn to.
+    '''
+    def is_cutoff(state, depth):
+        if ((evaluate(state) == utils.WIN) or (evaluate(state) == -utils.WIN) or depth >= max_depth):
+            return True
+        return False
+    def max_value(state, depth):
+        best_move = None
+        if (is_cutoff(state, depth)):
+            return (evaluate(state), best_move)
+        v = float('-inf')
+        moves = generate_valid_moves(state)
+        for move in moves:
+            temp = v
+            src = move[0]
+            dst = move[1]
+            next_state = utils.state_change(state, src, dst, False)
+            v = max(v, min_value(next_state, depth + 1)[0])
+            if (v != temp):
+                best_move = move
+        return (v, best_move)
+    def min_value(state, depth):
+        best_move = None
+        if (is_cutoff(state, depth)):
+            return (evaluate(state), best_move)
+        v = float('inf')
+        utils.invert_board(state)
+        moves = generate_valid_moves(state)
+        for move in moves:
+            tmp = v
+            src = move[0]
+            dst = move[1]
+            next_state = utils.state_change(state, src, dst, False)
+            utils.invert_board(next_state)
+            v = min(v, max_value(next_state, depth + 1)[0])
+            if (v != tmp):
+                best_move = move
+        return (v, best_move)
+    
+    return max_value(board, depth)
