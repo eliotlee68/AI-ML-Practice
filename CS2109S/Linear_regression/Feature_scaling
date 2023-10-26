@@ -1,0 +1,14 @@
+def feature_scaling(X):
+    '''
+    Mean normalized each feature column.
+    Parameters
+    ----------
+    X (np.ndarray) : (m, n) numpy matrix representing feature matrix
+    Returns
+    -------
+        A (m, n) numpy matrix where each column has been mean-normalized.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    means = np.mean(X, 0)
+    std = np.std(X, 0)
+    return(X - means) / std
