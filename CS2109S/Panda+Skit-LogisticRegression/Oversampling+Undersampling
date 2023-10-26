@@ -1,0 +1,39 @@
+def random_undersampling(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Given credit card dataset with 0 as the majority for 'Class' column. Returns credit card data with two classes
+    having the same shape, given raw data read from csv.
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The potentially imbalanced dataset.
+    Returns
+    -------
+    Undersampled dataset with equal number of fraudulent and legitimate data.
+    '''
+    
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    majority = df[df['Class'] == 0]
+    minority = df[df['Class'] == 1]
+    majority = majority.sample(n = minority.shape[0])
+    final = pd.concat([minority, majority], axis = 0)
+    return final
+
+def random_oversampling(df: pd.DataFrame) -> pd.DataFrame:
+    '''
+    Given credit card dataset with 0 as the majority for 'Class' column. Returns credit card data with two classes
+    having the same shape, given raw data read from csv.
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The potentially imbalanced dataset.
+    Returns
+    -------
+    Oversampled dataset with equal number of fraudulent and legitimate data.
+    '''
+    
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    majority = df[df['Class'] == 0]
+    minority = df[df['Class'] == 1]
+    minority = minority.sample(n = majority.shape[0], replace = True)
+    final = pd.concat([minority, majority], axis = 0)
+    return final
