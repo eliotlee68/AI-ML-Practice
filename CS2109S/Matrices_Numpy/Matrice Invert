@@ -1,0 +1,61 @@
+def invert_matrix(A):
+    """
+    Returns the inverse of matrix A, if it exists; otherwise, returns False
+    """
+    if len(A[0]) != len(A):
+        return False
+    
+    # TODO: add your solution here and remove `raise NotImplementedError`
+        # Dimensions
+    dim = len(A)
+    
+    #Create dimXdim unit matrice
+    unit = []
+    for i in range(dim):
+        temp_arr = []
+        for j in range(dim):
+            temp_arr.append(1 if (i == j) else 0)
+        unit.append(temp_arr)
+    #Create Adjacency matrice
+    Adj = copy.deepcopy(A)
+    for i in range(dim):
+        for j in range(dim):
+            Adj[i].append(unit[i][j])
+    #Create function to swap two rows in a matrice
+    def swap(A,i,j):
+        temp = A[j]
+        A[j] = A[i]
+        A[i] = temp
+    
+    #Perform Gauss-Jordan Elimination
+    for i in range(dim):
+        #find pivot row
+        found = False
+        j = i
+        while (not found):
+            if (Adj[j][i] != 0):
+                swap(Adj,i,j)
+                found = True
+            elif (j == (dim - 1)):
+                return False
+            else:
+                j += 1
+        #Multiply by scalar to equal 1
+        Adj[i] = mult_scalar(Adj[i], (1 / Adj[i][i]))
+        #Minus off other rows
+        for k in range(j + 1, dim):
+            if (Adj[k][i] != 0):
+                Adj[k] = add_matrices(Adj[k], mult_scalar(Adj[i], (-1 * Adj[k][i])))
+    #Cleanup
+    for i in range(dim - 1, -1, -1):
+        for j in range (i - 1, -1, -1):
+            if (Adj[j][i] != 0):
+                Adj[j] = add_matrices(Adj[j], mult_scalar(Adj[i], (-1 * Adj[j][i])))
+    #Extract final matrix
+    Final = []
+    for i in range(dim):
+        temp_arr = []
+        for j in range(dim, (2 * dim)):
+            temp_arr.append(Adj[i][j])
+        Final.append(temp_arr)
+    return Final
