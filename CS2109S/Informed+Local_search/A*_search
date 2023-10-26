@@ -1,0 +1,66 @@
+def heuristic_func(problem: cube.Cube, state: cube.State) -> float:
+    r"""
+    Computes the heuristic value of a state
+    
+    Args:
+        problem (cube.Cube): the problem to compute
+        state (cube.State): the state to be evaluated
+        
+    Returns:
+        h_n (float): the heuristic value 
+    """
+    h_n = 0.0
+    goals = problem.goal
+    """ YOUR CODE HERE """
+     #Heuristic is amount of mismatched elements / max amount of elements that can be solved in one rotate
+    rows = state.shape[0]
+    cols = state.shape[1]
+    maxSolvesPerRotate = max(rows, cols)
+    for element, solution in zip(state.layout, goals.layout):
+        if (element != solution):
+            h_n = h_n + (1 / maxSolvesPerRotate)
+    
+    """ END YOUR CODE HERE """
+    return h_n
+def astar_search(problem: cube.Cube):
+    r"""
+    A* Search finds the solution to reach the goal from the initial.
+    By default, fail is True and returns False.
+    
+    Args:
+        problem (cube.Cube): Cube instance
+    Returns:
+        solution (List[Action]): the action sequence
+    """
+    fail = True
+    solution = []
+    start = problem.initial
+    visited = set()
+    frontier = PriorityQueue()
+    startNode = Node(None, None, start, 0, heuristic_func(problem, start))
+    PriorityQueue.push(frontier, Node.get_fn(startNode), startNode)
+    backtrackNode = None
+    while(frontier and fail):
+        currNode = PriorityQueue.pop(frontier)
+        currState = currNode.state
+        visited.add(currState)
+        if (problem.goal_test(currState)):
+            backtrackNode = currNode
+            fail = False
+            break
+        actions = problem.actions(currState)
+        for action in actions:
+            result = problem.result(currState, action)
+            if (result not in visited):
+                g_n = currNode.g_n + 1.0
+                h_n = heuristic_func(problem, result)
+                nextNode = Node(currNode, action, result, g_n, h_n)
+                PriorityQueue.push(frontier, Node.get_fn(nextNode), nextNode)
+    if fail:
+        return False
+    else:
+        while (backtrackNode.parent != None):
+            solution.append(backtrackNode.act)
+            backtrackNode = backtrackNode.parent
+        solution.reverse()
+        return solution
