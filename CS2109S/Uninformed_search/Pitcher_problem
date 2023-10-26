@@ -1,0 +1,87 @@
+def pitcher_search(p1,p2,p3,a):
+    '''
+    Solution should be the action taken from the root node (initial state) to
+    the leaf node (goal state) in the search tree.
+    Parameters
+    ----------
+    p1: capacity of pitcher 1
+    p2: capacity of pitcher 2
+    p3: capacity of pitcher 3
+    a: amount of water we want to measure
+    Returns
+    ----------
+    Returns the solution to the problem as a tuple of steps. Each step is a string: "Fill Pi", "Empty Pi", "Pi=>Pj".
+    If there is no solution, return False.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    initial_state = (0,0,0)
+    max_vol = [p1,p2,p3]
+    frontier = []
+    step_tracker = {}
+    frontier.append(initial_state)
+    found = False
+    step_tracker[initial_state] = None
+    goal = None
+    #define actions
+    def empty(state, pitcher):
+        tmp = list(state)
+        tmp[pitcher] = 0
+        return tuple(tmp)
+    def fill(state, pitcher):
+        tmp = list(state)
+        tmp[pitcher] = max_vol[pitcher]
+        return tuple(tmp)
+    def pour(state, src, dst):
+        tmp = list(state)
+        tmp[dst] = min(max_vol[dst], (state[dst] + state[src]))
+        tmp[src] = tmp[src] - (tmp[dst] - state[dst])
+        return tuple(tmp)
+    def checkVal(state):
+        for vol in state:
+            if (vol == a):
+                return True
+        return False
+    #BFS
+    while (frontier and not found):
+        curr_state = frontier.pop(0)
+        for pitcher in range(0,3):
+            emptied = empty(curr_state, pitcher)
+            filled = fill(curr_state, pitcher)
+            if (emptied not in step_tracker):
+                step_tracker[emptied] = (curr_state, f"Empty P{(pitcher+1)}")
+                if (checkVal(emptied)):
+                    goal = emptied
+                    found = True
+                else:
+                    frontier.append(emptied)
+            if (filled not in step_tracker):
+                step_tracker[filled] = (curr_state, f"Fill P{(pitcher+1)}")
+                if (checkVal(filled)):
+                    goal = filled
+                    found = True
+                else:
+                    frontier.append(filled)
+        for pitch1 in range(0,3):
+            for pitch2 in range(0,3):
+                if (pitch1 != pitch2):
+                    poured = pour(curr_state, pitch1, pitch2)
+                    if (poured not in step_tracker):
+                        step_tracker[poured] = (curr_state, f"P{(pitch1+1)}=>P{(pitch2+1)}")
+                        if (checkVal(poured)):
+                            goal = poured
+                            found = True
+                        else:
+                            frontier.append(poured)
+    #generate return
+    if (found):
+        backtrack_state = goal
+        accum_arr = []
+        while (step_tracker[backtrack_state] != None):
+            step = step_tracker[backtrack_state][1]
+            prev = step_tracker[backtrack_state][0]
+            accum_arr.append(step)
+            backtrack_state = prev
+        accum_arr.reverse()
+        return tuple(accum_arr)
+    else:
+        return False
