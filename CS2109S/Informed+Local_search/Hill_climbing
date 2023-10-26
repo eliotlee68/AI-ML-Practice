@@ -1,0 +1,127 @@
+def transition(route: List[int]):
+    r"""
+    Generates new routes to be used in the next iteration in the hill-climbing algorithm.
+    Args:        
+        route (List[int]): The current route as a list of cities in the order of travel
+    Returns:
+        new_routes (List[List[int]]): New routes to be considered
+    """
+    new_routes = []
+    cities = len(route)
+    def swap(arr, i, j):
+        tmp = arr.copy()
+        tmp[i] = arr[j]
+        tmp[j] = arr[i]
+        return tmp
+    for i in range (0,(cities - 1)):
+        new_routes.append(swap(route, i, i + 1))
+        
+    return new_routes
+
+def evaluation_func(cities: int, distances: List[Tuple[int]], route: List[int]) -> float:
+    r"""
+    Computes the evaluation score of a route
+    Args:
+        cities (int): The number of cities to be visited
+        distances (List[Tuple[int]]): The list of distances between every two cities
+            Each distance is represented as a tuple in the form of (c1, c2, d), where
+                c1 and c2 are the two cities and d is the distance between them.
+            The length of the list should be equal to cities * (cities - 1)/2.
+        route (List[int]): The current route as a list of cities in the order of travel
+    Returns:
+        h_n (float): the evaluation score
+    """
+    h_n = 0.0
+    def findDist(c1, c2, distances):
+        if (c1 == c2):
+            return 0
+        for i in range(len(distances)):
+            if (
+                ((distances[i][0] == c1) and (distances[i][1] == c2)) or
+                ((distances[i][0] == c2) and (distances[i][1] == c1))
+                ):
+                return distances[i][2]
+                
+    for i in range (cities - 1):
+        h_n -= findDist(route[i], route[i + 1], distances)
+    h_n -= findDist(route[0], route[cities -1], distances)
+    return h_n
+    return h_n
+
+def hill_climbing(cities: int, distances: List[Tuple[int]]):
+    r"""
+    Hill climbing finds the solution to reach the goal from the initial.
+    By default, fail is True and returns False.
+    
+    Args:
+        cities (int): The number of cities to be visited
+        
+        distances (List[Tuple[int]]): The list of distances between every two cities
+            Each distance is represented as a tuple in the form of (c1, c2, d), where
+                c1 and c2 are the two cities and d is the distance between them.
+            The length of the list should be equal to cities * (cities - 1)/2.
+    Returns:
+        route (List[int]): The shortest route, represented by a list of cities
+            in the order to be traversed.
+    """
+    route = []
+    
+    """ YOUR CODE HERE """
+    for i in range(cities):
+        route.append(i)
+    
+    random.shuffle(route)
+    while True:
+        neighbours = transition(route)
+        best_neighbour = neighbours[0]
+        for neighbour in neighbours:
+            if (evaluation_func(cities, distances, neighbour) >= evaluation_func(cities, distances, best_neighbour)):
+                best_neighbour = neighbour
+        if (evaluation_func(cities, distances, best_neighbour) <= evaluation_func(cities, distances, route)):
+            break
+        else:
+            route = best_neighbour
+    return route
+
+def hill_climbing_with_random_restarts(cities: int, distances: List[Tuple[int]], repeats: int = 10):
+    r"""
+    Hill climbing with random restarts finds the solution to reach the goal from the initial.
+    By default, fail is True and returns False.
+    
+    Args:
+        cities (int): The number of cities to be visited
+        
+        distances (List[Tuple[int]]): The list of distances between every two cities
+            Each distance is represented as a tuple in the form of (c1, c2, d), where
+                c1 and c2 are the two cities and d is the distance between them.
+            The length of the list should be equal to cities * (cities - 1)/2.
+        repeats (int): The number of times hill climbing to be repeated. The default
+            value is 10.
+    Returns:
+        route (List[int]): The shortest route, represented by a list of cities
+            in the order to be traversed.
+    """
+    def hillClimb(cities, distances):
+        route = []
+        for i in range(cities):
+            route.append(i)
+        random.shuffle(route)
+        while True:
+            neighbours = transition(route)
+            best_neighbour = neighbours[0]
+            for neighbour in neighbours:
+                if (evaluation_func(cities, distances, neighbour) >= evaluation_func(cities, distances, best_neighbour)):
+                    best_neighbour = neighbour
+            if (evaluation_func(cities, distances, best_neighbour) <= evaluation_func(cities, distances, route)):
+                break
+            else:
+                route = best_neighbour
+        return route
+    optimal_routes = []
+    for i in range(repeats):
+        optimal_routes.append(hillClimb(cities, distances))
+    bestRoute = optimal_routes[0]
+    for route in optimal_routes:
+        if (evaluation_func(cities, distances, route) >= evaluation_func(cities, distances, bestRoute)):
+            bestRoute = route
+    return bestRoute
