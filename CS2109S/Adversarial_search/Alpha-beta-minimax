@@ -1,0 +1,50 @@
+def minimax_alpha_beta(board, depth, max_depth, alpha, beta, is_black: bool) -> Tuple[Score, Move]:
+    # TODO: Replace this with your own implementation
+    
+    def is_cutoff(state, depth):
+        if ((depth == max_depth) or utils.is_game_over(state)):
+            return True
+        return False
+    def max_val(state, depth, alpha, beta):
+        best_move = None
+        if (is_cutoff(state, depth)):
+            return (evaluate(state), None)
+        v = float('-inf')
+        moves = generate_valid_moves(state)
+        for move in moves:
+            src = move[0]
+            dst = move[1]
+            nextstate = utils.state_change(state, src, dst, False)
+            score = min_val(nextstate, depth + 1, alpha, beta)[0]
+            if (score > v):
+                best_move = move
+                v = score
+            if (v >= beta):
+                return (v, best_move)
+            if (v > alpha):
+                alpha = v
+        return (v, best_move)
+    def min_val(state, depth, alpha, beta):
+        best_move = None
+        if (is_cutoff(state, depth)):
+            return (evaluate(state), None)
+        v = float('inf')
+        utils.invert_board(state, True)
+        moves = generate_valid_moves(state)
+        for move in moves:
+            src = move[0]
+            dst = move[1]
+            nextstate = utils.state_change(state, src, dst, False)
+            utils.invert_board(nextstate, True)
+            score = max_val(nextstate, depth + 1, alpha, beta)[0]
+            if (score < v):
+                v = score
+                best_move = move
+            if (v <= alpha):
+                return (v, best_move)
+            if (v < beta):
+                beta = v
+        return (v, best_move)
+    
+    a = max_val(board, depth, float('-inf'), float('inf'))
+    return a
