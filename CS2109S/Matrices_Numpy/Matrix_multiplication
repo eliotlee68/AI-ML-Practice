@@ -1,0 +1,22 @@
+def mult_matrices(A, B):
+    """
+    Multiplies matrix A by matrix B, giving AB.
+    """
+    if len(A[0]) != len(B):
+        raise Exception('Incompatible dimensions for matrix multiplication of A and B')
+    
+    #Dimensions where A is a MxP matrice and B is a PxN matrice
+    m = len(A)
+    n = len(B[0])
+    p = len(A[0])
+    #Loops
+    C = []
+    for i in range(m):
+        temp_arr = []
+        for j in range(n):
+            temp_val = 0
+            for k in range(p):
+                temp_val += (A[i][k] * B[k][j])
+            temp_arr.append(temp_val)
+        C.append(temp_arr)
+    return C
