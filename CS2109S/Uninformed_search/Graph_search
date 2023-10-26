@@ -1,0 +1,97 @@
+def mnc_graph_search(m,c):
+    '''
+    Graph search requires to deal with the redundant path: cycle or loopy path.
+    Modify the above implemented tree search algorithm to accelerate your AI.
+    Parameters
+    ----------
+    m: no. of missionaries
+    c: no. of cannibals
+    Returns
+    ----------
+    Returns the solution to the problem as a tuple of steps. Each step is a tuple of two numbers x and y, indicating the number of missionaries and cannibals on the boat respectively as the boat moves from one side of the river to another. If there is no solution, return False.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    #variables
+    initial_state = ((0, 0, 0), (m, c, 1))
+    goal_state =  ((m, c, 1), (0, 0, 0))
+    frontier = []
+    step_tracker = {}
+    max_iter = (2 * (m + 1) * (c + 1))
+    found = False
+    #initialise
+    frontier.append(initial_state)
+    step_tracker[initial_state] = None
+    #define useful functions
+    def checkValid(t):
+        '''
+        Returns if a given state is valid
+        Parameters
+        ----------
+        t: tuple representing a state
+        Returns
+        ----------
+        Returns whether the state is valid
+        '''
+        m1 = t[0][0]
+        m2 = t[1][0]
+        c1 = t[0][1]
+        c2 = t[1][1]
+        b1 = t[0][2]
+        b2 = t[1][2]
+        #check for negative
+        if ((m1 < 0) or (m2 < 0) or (c1 < 0) or (c2 < 0)):
+            return False
+        #Check for invariant
+        if (m1 < c1):
+            if (m1 != 0):
+                return False
+        elif (m2 < c2):
+            if (m2 != 0):
+                return False
+        return True
+    def trans(t, m, c, b):
+        '''
+        transforms a state into a new one
+        
+        Parameters
+        ----------
+        t: tuple representing a state
+        m: amount of missionaries on the boat
+        c: amount of cannibals on the boat
+        b: 0 if the boat is on the left, 1 if the boat is on the right
+        Returns
+        ----------
+        Returns a new tuple representing the new state 
+        '''
+        if (b == 1):
+            return (((t[0][0] - m),(t[0][1] - c), 0), ((t[1][0] + m), (t[1][1] + c), 1))
+        else:
+            return (((t[0][0] + m),(t[0][1] + c), 1), ((t[1][0] - m), (t[1][1] - c), 0))
+    #BFS
+    while ((frontier) and (not found) and (len(step_tracker) <= max_iter)):
+        curr_state = frontier.pop(0)
+        actions = [
+            trans(curr_state, 0, 1, curr_state[0][2]),
+            trans(curr_state, 0, 2, curr_state[0][2]),
+            trans(curr_state, 1, 0, curr_state[0][2]),
+            trans(curr_state, 1, 1, curr_state[0][2]),
+            trans(curr_state, 2, 0, curr_state[0][2])]
+        for action in actions:
+            if ((checkValid(action)) and (action not in step_tracker)):
+                step_tracker[action] = curr_state
+                if (action == goal_state):
+                    found = True
+                else:
+                    frontier.append(action)
+    if found:
+        state = goal_state
+        steps = []
+        while (step_tracker.get(state) != None):
+            prev = step_tracker.get(state)
+            step_taken = (abs(prev[0][0] - state[0][0]), abs(prev[0][1] - state[0][1]))
+            steps.append(step_taken)
+            state = prev
+        steps.reverse()
+        return tuple(steps)
+    else:
+        return False
