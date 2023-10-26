@@ -1,0 +1,15 @@
+def mean_squared_error(y_true, y_pred):
+    '''
+    Calculate mean squared error between y_pred and y_true.
+    Parameters
+    ----------
+    y_true (np.ndarray) : (m, 1) numpy matrix consists of target value
+    y_pred (np.ndarray) : (m, 1) numpy matrix consists of prediction
+    
+    Returns
+    -------
+        The mean squared error value.
+    '''
+  
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    return np.mean(np.square(y_true - y_pred))
