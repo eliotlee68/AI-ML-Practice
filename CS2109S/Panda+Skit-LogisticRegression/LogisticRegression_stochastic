@@ -1,0 +1,62 @@
+def weight_update_stochastic(X: np.ndarray, y: np.ndarray, alpha: np.float64, weight_vector: np.ndarray) -> np.ndarray:
+    '''
+    Do the weight update for one step in gradient descent.
+    Parameters
+    ----------
+    X: np.ndarray
+        (1, n) training dataset (features).
+    y: np.ndarray
+        one y in training dataset (corresponding targets).
+    alpha: np.float64
+        logistic regression learning rate.
+    weight_vector: np.ndarray
+        (n, 1) vector of weight parameters.
+    Returns
+    -------
+    New (n,) weight parameters after one round of update.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    n = X.shape[1]
+    weighted_x = np.matmul(X, weight_vector)
+    pred_y = (1 / (1 + np.exp(-weighted_x)))
+    weightsDerive = (np.transpose(X) * (pred_y - y))
+    new_weights = weight_vector - ((weightsDerive * alpha).reshape((n,)))
+    return new_weights
+def logistic_regression_stochastic_gradient_descent(X_train: np.ndarray, y_train: np.ndarray, max_num_iterations: int=250, threshold: np.float64=0.05, alpha: np.float64=1e-5) -> np.ndarray:
+    '''
+    Initialize your weight to zeros. Write a terminating condition, and run the weight update for some iterations.
+    Get the resulting weight vector.
+    Parameters
+    ----------
+    X_train: np.ndarray
+        (m, n) training dataset (features).
+    y_train: np.ndarray
+        (m,) training dataset (corresponding targets).
+    max_num_iterations: int
+        this should be one of the terminating conditions. 
+        The gradient descent step should happen at most max_num_iterations times.
+    threshold: np.float64
+        terminating when error <= threshold value, or if you reach the max number of update rounds first.
+    alpha: np.float64
+        logistic regression learning rate.
+    Returns
+    -------
+    The final (n,) weight parameters
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    num_update_rounds = 0
+    m = X_train.shape[0]
+    n = X_train.shape[1]
+    
+    weights = np.zeros(n)
+    error = cost_function(X_train, y_train, weights)
+    
+    
+    while ((error > threshold) and (num_update_rounds < max_num_iterations)):
+        randomIndex = np.random.randint(0, m-1)
+        Xsample = X_train[randomIndex]
+        Ysample = y_train[randomIndex]
+        weights = weight_update_stochastic(Xsample.reshape((1, n)), Ysample, alpha, weights)
+        error = cost_function(X_train, y_train, weights)
+        num_update_rounds += 1
+    return weights
