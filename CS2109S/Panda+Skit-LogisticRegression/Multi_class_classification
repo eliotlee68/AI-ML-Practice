@@ -1,0 +1,32 @@
+def multi_class_logistic_regression_classification(X: np.ndarray, weight_vector_none: np.ndarray, weight_vector_some: np.ndarray, weight_vector_full: np.ndarray):
+    '''
+    Do classification task using logistic regression.
+    In the case of a tie, break the tie in the priority 'none' > 'some' > 'full'.
+    Parameters
+    ----------
+    X: np.ndarray
+        (m, n) training dataset (features)
+    weight_vector_none: np.ndarray
+        (n,) weight parameters for the 'none' class.
+    weight_vector_some: np.ndarray
+        (n,) weight parameters for the 'some' class.
+    weight_vector_full: np.ndarray
+        (n,) weight parameters for the 'full' class.
+    Returns
+    -------
+    Classification result as an (m,) np.ndarray. Eg ['some', 'none', 'full', ... ,'none'].
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    m = X.shape[0]
+    n = X.shape[1]
+    weighted_none = np.matmul(X, weight_vector_none.reshape((n, 1)))
+    pred_none = (1 / (1 + np.exp(-weighted_none)))
+    weighted_some = np.matmul(X, weight_vector_some.reshape((n, 1)))
+    pred_some = (1 / (1 + np.exp(-weighted_some)))
+    weighted_full = np.matmul(X, weight_vector_full.reshape((n, 1)))
+    pred_full = (1 / (1 + np.exp(-weighted_full)))
+    
+    
+    result = np.where(pred_some >= pred_full, 'some', 'full')
+    result = np.where(pred_none >= np.max([pred_some, pred_full], axis=0), 'none', result)
+    return result.reshape((m,))
