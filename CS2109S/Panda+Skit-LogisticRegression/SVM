@@ -1,0 +1,49 @@
+def linear_svm(X: np.ndarray, y: np.ndarray):
+    '''
+    Do classification using linear svm. Given X and y, note that here X and y are not training sets, but rather the
+    entire dataset. Do a train test data split with test_size=0.3, and random_state=42.
+    Parameters
+    ----------
+    X: np.ndarray
+        (m, n) whole dataset (features)
+    y: np.ndarray
+        (m,) whole dataset (corresponding targets)
+    Returns
+    -------
+    pred: np.ndarray
+        The predictions.
+    acc: np.float64
+        The accuracy on a scale up to 100.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.3, random_state = 42)
+    svm_model = svm.SVC(kernel = 'linear')
+    svm_model = svm_model.fit(X_train, y_train)
+    prediction = svm_model.predict(X_test)
+    accuracy = svm_model.score(X_test, y_test.reshape(-1, 1)) * 100
+    return (prediction, accuracy)
+
+def gaussian_kernel_svm(X: np.ndarray, y: np.ndarray):
+    '''
+    Do classification using Gaussian Kernel svm. Given X and y, note that here X and y are not training sets, but
+    rather the entire dataset. Do a train test data split with test_size=0.3, and random_state=42.
+    Parameters
+    ----------
+    X: np.ndarray
+        (m, n) whole dataset (features)
+    y: np.ndarray
+        (m,) whole dataset (corresponding targets)
+    Returns
+    -------
+    pred: np.ndarray
+        The predictions.
+    acc: np.float64
+        The accuracy on a scale up to 100.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.3, random_state = 42)
+    svm_model = svm.SVC(kernel = 'rbf')
+    svm_model = svm_model.fit(X_train, y_train)
+    prediction = svm_model.predict(X_test)
+    accuracy = svm_model.score(X_test, y_test.reshape(-1, 1)) * 100
+    return (prediction, accuracy)
