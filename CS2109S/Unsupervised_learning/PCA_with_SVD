@@ -1,0 +1,35 @@
+def my_pca(X, n_components):
+    '''
+    Performs PCA on X to reduce it to `n_components`, using the method
+    described in lecture but with the 'centering' of X before SVD is done.
+    Parameters
+    ----------
+    X: np.darray
+        An `m * n` matrix where `m` is the number of samples and `n` is the
+        number of features which each sample has. In other words, the `i`th sample
+        is given by `X[i]`.
+    n_components: int
+        No. of components that the reduced space has.
+  
+    Returns
+    -------
+    The tuple `(components, singular_values)`. Here, `components` is an
+    `n_components * n` matrix such that `components[i]` returns the `i`th
+    principal axis that has the `i`th largest singular value. In addition,
+    `singular_values` is a 1D numpy array with `n_components` entries such that
+    `singular_values[i]` returns the `i`th singular value.
+    Note
+    ----
+    'centering' here refers to subtracting the mean from X such that the resulting
+    X' has a mean of 0 for each feature.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    # no loop allowed
+    m, n = X.shape
+    mean = np.mean(X, axis = 0)
+    centered = X - mean
+    cov = np.matmul(np.transpose(centered), centered) / m
+    svd = np.linalg.svd(cov)
+    singular_values = svd[1][:n_components]
+    components = svd[2][:n_components]
+    return components, singular_values
