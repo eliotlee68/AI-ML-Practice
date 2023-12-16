@@ -1,0 +1,26 @@
+def maxpool2d(img, size):
+    """
+    PARAMS
+        img: the 2-dim image with a specific height and width
+        size: an integer corresponding to the window size for Max Pooling
+    
+    RETURNS
+        the 2-dim output after Max Pooling
+    """
+    # YOUR CODE HERE
+    
+    heightPointer, widthPointer = 0, 0
+    imgHeight = img.shape[0]
+    imgWidth = img.shape[1]
+    results = []
+    
+    while (heightPointer + size <= imgHeight):
+        while (widthPointer + size <= imgWidth):
+            window = img[heightPointer:heightPointer + size, widthPointer:widthPointer + size]
+            results.append(torch.max(window).item())
+            widthPointer += 1
+        widthPointer = 0
+        heightPointer += 1
+    
+    final = torch.from_numpy(np.array(results)).view(imgHeight - size + 1, imgWidth - size + 1)
+    return final
