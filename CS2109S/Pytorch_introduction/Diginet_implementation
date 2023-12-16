@@ -1,0 +1,39 @@
+class DigitNet(nn.Module):
+    def __init__(self, input_dimensions, num_classes): # set the arguments you'd need
+        super().__init__()
+        """
+        YOUR CODE HERE
+        - DO NOT hardcode the input_dimensions, use the parameter in the function
+        - Your network should work for any input and output size 
+        - Create the 3 layers (and a ReLU layer) using the torch.nn layers API
+        """
+        self.l1 = nn.Linear(input_dimensions, 512)
+        self.l2 = nn.Linear(512, 128)
+        self.l3 = nn.Linear(128, num_classes)
+        self.relu = nn.ReLU()
+        
+    def forward(self, x):
+        """
+        Performs the forward pass for the network.
+        
+        Parameters
+        ----------
+        x : Input tensor (batch size is the entire dataset)
+        Returns
+        -------
+            The output of the entire 3-layer model.
+        """
+        
+        """
+        YOUR CODE
+        
+        - Pass the inputs through the sequence of layers
+        - Run the final output through the Softmax function on the right dimension!
+        """
+        x = self.l1(x)
+        x = self.relu(x)
+        x = self.l2(x)
+        x = self.relu(x)
+        x = self.l3(x)
+        x = torch.softmax(x, 1)
+        return x
