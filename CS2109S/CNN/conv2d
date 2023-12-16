@@ -1,0 +1,32 @@
+def conv2d(img, kernel):
+    """
+    PARAMS
+        img: the 2-dim image with a specific height and width
+        kernel: a 2-dim kernel (smaller than image dimensions) that convolves the given image
+    
+    RETURNS
+        the convolved 2-dim image
+    """
+    # YOUR CODE HERE
+    kernelHeight = kernel.shape[0]
+    kernelWidth = kernel.shape[1]
+    imgHeight = img.shape[0]
+    imgWidth =img.shape[1]
+    topPointer, leftPointer = 0, 0
+    
+    result = []
+    
+    
+    while ((topPointer + kernelWidth <= imgHeight)):
+        while (leftPointer + kernelHeight) <= imgWidth:
+           btmBound = topPointer + kernelHeight
+           rightBound = leftPointer + kernelWidth
+           window = img[topPointer:btmBound, leftPointer:rightBound]
+           dotProduct = torch.sum(torch.mul(window, kernel)).item()
+           result.append(dotProduct)
+           leftPointer += 1   
+        leftPointer = 0
+        topPointer += 1
+    
+    final = torch.from_numpy(np.array(result)).view(imgHeight - kernelHeight + 1, imgWidth - kernelWidth + 1)
+    return final
