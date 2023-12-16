@@ -1,0 +1,29 @@
+def polyfit(x, y, loss_fn, n, lr, n_iter):
+    """
+    Parameters
+    ----------
+        x : A tensor of shape (1, n)
+        y : A tensor of shape (1, n)
+        loss_fn : Function to measure loss
+        n : The nth-degree polynomial
+        lr : Learning rate
+        n_iter : The number of iterations of gradient descent
+        
+    Returns
+    -------
+        Near-optimal coefficients of the nth-degree polynomial as a tensor of shape (n,1) after `n_iter` epochs.
+    """
+    
+    X = x.reshape(-1, 1)
+    coeff = torch.zeros(n + 1, requires_grad = True)
+    powers = torch.arange(n + 1).reshape(1, -1)
+    polynomial = X ** powers
+    for t in range(1, n_iter + 1):
+        y_pred = (polynomial @ coeff).squeeze()
+        loss = loss_fn(y, y_pred)
+        loss.backward()
+        
+        with torch.no_grad():
+            coeff -= (lr * coeff.grad)
+            coeff.grad.zero_()
+    return coeff
