@@ -1,0 +1,186 @@
+def assign_clusters(X, centroids):
+    """
+    Assigns each sample in X to the closest cluster.
+    Parameters
+    ----------
+    X: np.darray
+        An `m * n` matrix where `m` is the number of samples and `n` is the
+        number of features which each sample has. In other words, the `i`th sample
+        is given by `X[i]`.
+    centroids: np.darray
+        An `n_clusters * n` matrix where `n_clusters` is the number of clusters
+        and `n` is the number of features which each sample has. In particular, 
+        `centroids[j]` represents the `j`th cluster's centroid.
+    Returns
+    -------
+    An `ndarray` of integers that indicates the cluster assignment for each sample.
+    Specifically, if `labels` is the `ndarray` returned, then `labels[i]` indicates
+    that the `i`th sample in X has been assigned to the `labels[i]`th cluster, where
+    `labels[i]` is a value in the interval [0, `n_clusters`). This cluster should
+    be the one with a centroid that is closest to `X[i]` in terms of its Euclidean
+    distance. Note that this array should be an array of integers.
+    Note
+    ----
+    If there are multiple possible closest clusters for the `i`th sample in X,
+    assign it to the cluster with the smallest index. For example, if `X[0]` is
+    as close to `centroids[0]` as it is to `centroids[1]`, it should be assigned
+    to the 0th cluster instead of the 1st cluster, since 0 < 1.
+    """
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    # at most 1 loop allowed
+    num_samples = X.shape[0]
+    centroidTrans = np.transpose(centroids)
+    centroidAssignments = []
+    for i in range(num_samples):
+        sample = X[i].reshape(-1, 1)
+        euclidian = np.sqrt(np.sum(np.square(sample - centroidTrans), axis = 0))
+        centroidAssignments.append(np.argmin(euclidian))
+    return np.array(centroidAssignments).astype(int)
+
+def update_centroids(X, labels, n_clusters):
+    '''
+    Updates the centroids based on the (new) assignment of clusters.
+    Parameters
+    ----------
+    X: np.darray
+        An `m * n` matrix where `m` is the number of samples and `n` is the
+        number of features which each sample has. In other words, the `i`th sample
+        is given by `X[i]`.
+    labels: np.darray
+        An array of `m` values, where `m` is the number of samples, that indicates
+        which cluster the samples have been assigned to, i.e. the `i`th
+        sample is assigned to the `labels[i]`th cluster.
+    n_clusters: int
+        No. of clusters.
+    Returns
+    -------
+    The `centroids`, an `ndarray` with shape `(n_clusters, n)`, for each cluster,
+    based on the current cluster assignment as specified by `labels`. In particular,
+    `centroids[j]` returns the centroid for the `j`th cluster.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`  
+    # at most 1 loop allowed
+    newCentroids = []
+    for i in range(n_clusters):
+        mask = (labels == i)
+        samples = X[mask]
+        newCentroid = np.mean(samples, axis = 0)
+        newCentroids.append(newCentroid)
+    final = np.array(newCentroids)
+    return final
+
+def check_convergence(prev_centroids, centroids, threshold):
+    '''
+    Checks whether the algorithm has converged.
+    Parameters
+    ----------
+    prev_centroids: np.darray
+        An `n_clusters * n` matrix where `n_clusters` is the number of clusters
+        and `n` is the number of features which each sample has. In particular, 
+        `prev_centroids[j]` represents the `j`th cluster's centroid in the
+        PREVIOUS iteration.
+    centroids: np.darray
+        An `n_clusters * n` matrix where `n_clusters` is the number of clusters
+        and `n` is the number of features which each sample has. In particular, 
+        `centroids[j]` represents the `j`th cluster's centroid in the CURRENT
+        iteration.
+    threshold: double
+        If each cluster is such that the Euclidean distance between its centroids
+        in the current and previous iteration is strictly less than `threshold`,
+        the algorithm is deemed to have converged.
+    Returns
+    -------
+    `True` if and only if the Euclidean distance between each
+    cluster's centroid in the previous and current iteration is strictly
+    less than `threshold`.
+    '''
+    # no loop allowed
+    diff = prev_centroids - centroids
+    euclidian = np.sqrt(np.sum(np.square(diff), axis = 0))
+    return np.all(euclidian < threshold)
+def k_means_once(X, initial_centroids, threshold):
+    '''
+    Assigns each point in X to a cluster by running the K-Means algorithm
+    once till convergence.
+    Parameters
+    ----------
+    X: np.darray
+        An `m * n` matrix where `m` is the number of samples and `n` is the
+        number of features which each sample has. In other words, the `i`th sample
+        is given by `X[i]`.
+    initial_centroids: np.darray
+        An `n_clusters * n` matrix, where `n_clusters` is the number of clusters and
+        `n` is the number of features that each sample in X has. This matrix is such
+        that the `i`th row represents the initial centroid of the `i`th cluster.
+    threshold: double
+        During the clustering process, if the difference in centroids between
+        two consecutive iterations is less than `threshold`, the algorithm is
+        deemed to have converged.
+    Returns
+    -------
+    The cluster assignment for each sample, and the `n_clusters` centroids found. 
+    In particular, the cluster assignment for the ith sample in `X` is given by `labels[i]`,
+    where 0 <= `labels[i]` < `n_clusters`. Moreover, suppose c = `labels[i]`. Then,
+    the `i`th sample belongs to the cluster c with the centroid given by `centroids[c]`.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    # at most 1 loop allowed
+    converged = False
+    prevCentroids = initial_centroids
+    currCentroids = initial_centroids
+    n_clusters = initial_centroids.shape[0]
+    labels = assign_clusters(X, currCentroids)
+    while not converged:
+        currCentroids = update_centroids(X, labels, n_clusters)
+        if (check_convergence(prevCentroids, currCentroids, threshold)):
+            converged = True
+        else:
+            labels = assign_clusters(X, currCentroids)
+            prevCentroids = currCentroids
+    
+    final = np.array(labels)
+    return final, currCentroids
+def compute_loss(X, centroids, labels):
+    '''
+    Computes the loss based on the current assignment of clusters.
+    Parameters
+    ----------
+    X: np.darray
+        An `m * n` matrix where `m` is the number of samples and `n` is the
+        number of features which each sample has. In other words, the `i`th sample
+        is given by `X[i]`.
+    centroids: np.darray
+        An `n_clusters * n` matrix where `n_clusters` is the number of clusters
+        and `n` is the number of features which each sample has. In particular, 
+        `centroids[j]` represents the `j`th cluster's centroid.
+    labels: np.darray
+        An array of `m` values, where `m` is the number of samples, that indicates
+        which cluster the samples have been assigned to,  i.e. `labels[i]` indicates
+        that the `i`th sample is assigned to the `labels[i]`th cluster.
+  
+    Returns
+    -------
+    The loss based on the current assignment of clusters.
+    '''
+    # TODO: add your solution here and remove `raise NotImplementedError`
+    # no loop allowed
+    distances = (X - centroids[labels])
+    euclidian = np.sum(np.square(distances), axis = 1)
+    return np.mean(euclidian)
+
+def k_means(X, n_clusters, threshold, n_init=1, random_state=None):
+  best_centroids, best_labels = None, None
+  lowest_loss = np.inf
+  for i in range(n_init):
+    curr_random_state = None if random_state is None else random_state + i
+    initial_centroids = init_centroids(X, n_clusters, curr_random_state)
+    # TODO: add your solution between the next two lines of comment and remove `raise NotImplementedError`
+    """ YOUR CODE HERE """
+    labels, centroids = k_means_once(X, initial_centroids, threshold)
+    loss = compute_loss(X, centroids, labels)
+    if (loss < lowest_loss):
+        best_centroids, best_labels = centroids, labels
+        lowest_loss = loss
+    """ END YOUR CODE HERE """
+  
+  return best_labels, best_centroids
