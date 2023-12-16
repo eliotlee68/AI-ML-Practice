@@ -1,0 +1,26 @@
+def train_model(x_train, y_train, epochs=20):
+    """
+    Trains the model for 20 epochs/iterations
+    
+    Parameters
+    ----------
+        x_train : A tensor of training features of shape (60000, 784)
+        y_train : A tensor of training labels of shape (60000, 1)
+        epochs  : Number of epochs, default of 20
+        
+    Returns
+    -------
+        The final model 
+    """
+    model = DigitNet(784, 10)
+    optimiser = torch.optim.Adam(model.parameters()) # use Adam
+    loss_fn = nn.CrossEntropyLoss()   # use CrossEntropyLoss
+    for i in range(epochs):
+        optimiser.zero_grad()
+        model.forward(x_train)
+        y_pred = model(x_train)
+        loss = loss_fn(y_pred, y_train)
+        loss.backward()
+        optimiser.step()
+    
+    return model
