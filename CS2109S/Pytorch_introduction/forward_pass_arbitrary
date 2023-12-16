@@ -1,0 +1,8 @@
+def forward_pass(x, w0, w1, activation_fn):
+    length = (x.shape[0])
+    padding = torch.ones(length).reshape(-1, 1)
+    padded = torch.cat([padding, x], axis = 1)
+    layer1 = activation_fn(padded@w0)
+    paddedlayer1 = torch.cat([padding, layer1], axis = 1)
+    final = paddedlayer1@w1
+    return final
