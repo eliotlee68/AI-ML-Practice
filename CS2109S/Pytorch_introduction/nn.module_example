@@ -1,0 +1,22 @@
+class MyFirstNeuralNet(nn.Module):
+    def __init__(self): # set the arguments you'd need
+        super().__init__()
+        self.l1 = nn.Linear(1, 2) # bias included by default
+        self.l2 = nn.Linear(2, 1) # bias included by default
+        self.relu = nn.ReLU()
+ 
+    # Task 3.1: Forward pass
+    def forward(self, x):
+        '''
+        Forward pass to process input through two linear layers and ReLU activation function.
+        Parameters
+        ----------
+        x : A tensor of of shape (n, 1) where n is the number of training instances
+        Returns
+        -------
+            Tensor of shape (n, 1)
+        '''
+        x = self.l1(x)
+        x = self.relu(x)
+        x = self.l2(x)
+        return x
