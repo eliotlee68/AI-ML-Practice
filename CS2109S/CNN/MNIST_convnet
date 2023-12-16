@@ -1,0 +1,28 @@
+class RawCNN(nn.Module):
+    def __init__(self, classes):
+        super().__init__()
+        """
+        classes: integer that corresponds to the number of classes for MNIST
+        """
+        self.c1 = nn.Conv2d(1, 32, 3)
+        self.maxPool = nn.MaxPool2d(2)
+        self.a1 = nn.LeakyReLU(0.1)
+        self.c2 = nn.Conv2d(32, 64, 3)
+        self.l1 = nn.Linear(1600, 256)
+        self.l2 = nn.Linear(256, 128)
+        self.l3 = nn.Linear(128, classes)
+        
+    def forward(self, x):
+        x = self.c1(x)
+        x = self.maxPool(x)
+        x = self.a1(x)
+        x = self.c2(x)
+        x = self.maxPool(x)
+        x = self.a1(x)
+        x = x.view(-1, 64*5*5) # Flattening – do not remove this line
+        x = self.l1(x)
+        x = self.a1(x)
+        x = self.l2(x)
+        x = self.a1(x)
+        x = self.l3(x)
+        return x
